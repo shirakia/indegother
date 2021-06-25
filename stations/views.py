@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import requests
 
 from rest_framework import status, views
@@ -8,16 +8,17 @@ from .models import Station
 from .serializers import StationSerializer, StationListSerializer
 
 
+def call_indego_station_api():
+    url = 'https://kiosks.bicycletransit.workers.dev/phl'
+
+    req = requests.get(url)
+    return req.json()
+
+
 class StationCreateAPIView(views.APIView):
 
     def post(self, request, *args, **kwargs):
-        now = datetime.datetime.now()
-
-        def call_indego_station_api():
-            url = 'https://kiosks.bicycletransit.workers.dev/phl'
-
-            req = requests.get(url)
-            return req.json()
+        now = datetime.now()
 
         body_json = call_indego_station_api()
         for feature in body_json['features']:

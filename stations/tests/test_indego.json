@@ -1,0 +1,242 @@
+{
+    "features": [
+        {
+            "geometry": {
+                "coordinates": [
+                    -75.16374,
+                    39.95378
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "id": 3004,
+                "name": "Municipal Services Building Plaza",
+                "coordinates": [
+                    -75.16374,
+                    39.95378
+                ],
+                "totalDocks": 30,
+                "docksAvailable": 27,
+                "bikesAvailable": 1,
+                "classicBikesAvailable": 1,
+                "smartBikesAvailable": 0,
+                "electricBikesAvailable": 0,
+                "rewardBikesAvailable": 1,
+                "rewardDocksAvailable": 27,
+                "kioskStatus": "FullService",
+                "kioskPublicStatus": "Active",
+                "kioskConnectionStatus": "Active",
+                "kioskType": 1,
+                "addressStreet": "1401 John F. Kennedy Blvd.",
+                "addressCity": "Philadelphia",
+                "addressState": "PA",
+                "addressZipCode": "19102",
+                "bikes": [
+                    {
+                        "dockNumber": 7,
+                        "isElectric": false,
+                        "isAvailable": true,
+                        "battery": null
+                    },
+                    {
+                        "dockNumber": 17,
+                        "isElectric": true,
+                        "isAvailable": false,
+                        "battery": 0.8
+                    },
+                    {
+                        "dockNumber": 29,
+                        "isElectric": false,
+                        "isAvailable": false,
+                        "battery": null
+                    }
+                ],
+                "closeTime": null,
+                "eventEnd": null,
+                "eventStart": null,
+                "isEventBased": false,
+                "isVirtual": false,
+                "kioskId": 3004,
+                "notes": null,
+                "openTime": null,
+                "publicText": "",
+                "timeZone": null,
+                "trikesAvailable": 0,
+                "latitude": 39.95378,
+                "longitude": -75.16374
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    -75.14403,
+                    39.94733
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "id": 3005,
+                "name": "Welcome Park, NPS",
+                "coordinates": [
+                    -75.14403,
+                    39.94733
+                ],
+                "totalDocks": 13,
+                "docksAvailable": 11,
+                "bikesAvailable": 2,
+                "classicBikesAvailable": 2,
+                "smartBikesAvailable": 0,
+                "electricBikesAvailable": 0,
+                "rewardBikesAvailable": 2,
+                "rewardDocksAvailable": 11,
+                "kioskStatus": "FullService",
+                "kioskPublicStatus": "Active",
+                "kioskConnectionStatus": "Active",
+                "kioskType": 1,
+                "addressStreet": "191 S. 2nd St.",
+                "addressCity": "Philadelphia",
+                "addressState": "PA",
+                "addressZipCode": "19106",
+                "bikes": [
+                    {
+                        "dockNumber": 5,
+                        "isElectric": false,
+                        "isAvailable": true,
+                        "battery": null
+                    },
+                    {
+                        "dockNumber": 12,
+                        "isElectric": false,
+                        "isAvailable": true,
+                        "battery": null
+                    }
+                ],
+                "closeTime": null,
+                "eventEnd": null,
+                "eventStart": null,
+                "isEventBased": false,
+                "isVirtual": false,
+                "kioskId": 3005,
+                "notes": null,
+                "openTime": null,
+                "publicText": "",
+                "timeZone": null,
+                "trikesAvailable": 0,
+                "latitude": 39.94733,
+                "longitude": -75.14403
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    -75.20311,
+                    39.9522
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "id": 3006,
+                "name": "40th & Spruce",
+                "coordinates": [
+                    -75.20311,
+                    39.9522
+                ],
+                "totalDocks": 17,
+                "docksAvailable": 7,
+                "bikesAvailable": 9,
+                "classicBikesAvailable": 4,
+                "smartBikesAvailable": 0,
+                "electricBikesAvailable": 5,
+                "rewardBikesAvailable": 9,
+                "rewardDocksAvailable": 7,
+                "kioskStatus": "FullService",
+                "kioskPublicStatus": "Active",
+                "kioskConnectionStatus": "Active",
+                "kioskType": 1,
+                "addressStreet": "246 S. 40th St.",
+                "addressCity": "Philadelphia",
+                "addressState": "PA",
+                "addressZipCode": "19104",
+                "bikes": [
+                    {
+                        "dockNumber": 1,
+                        "isElectric": true,
+                        "isAvailable": true,
+                        "battery": 0.8
+                    },
+                    {
+                        "dockNumber": 2,
+                        "isElectric": false,
+                        "isAvailable": true,
+                        "battery": null
+                    },
+                    {
+                        "dockNumber": 8,
+                        "isElectric": false,
+                        "isAvailable": true,
+                        "battery": null
+                    },
+                    {
+                        "dockNumber": 10,
+                        "isElectric": true,
+                        "isAvailable": true,
+                        "battery": 0.8
+                    },
+                    {
+                        "dockNumber": 12,
+                        "isElectric": true,
+                        "isAvailable": true,
+                        "battery": 0.8
+                    },
+                    {
+                        "dockNumber": 13,
+                        "isElectric": true,
+                        "isAvailable": false,
+                        "battery": 0.8
+                    },
+                    {
+                        "dockNumber": 14,
+                        "isElectric": false,
+                        "isAvailable": true,
+                        "battery": null
+                    },
+                    {
+                        "dockNumber": 15,
+                        "isElectric": true,
+                        "isAvailable": true,
+                        "battery": 0.8
+                    },
+                    {
+                        "dockNumber": 16,
+                        "isElectric": false,
+                        "isAvailable": true,
+                        "battery": null
+                    },
+                    {
+                        "dockNumber": 17,
+                        "isElectric": true,
+                        "isAvailable": true,
+                        "battery": 0.8
+                    }
+                ],
+                "closeTime": null,
+                "eventEnd": null,
+                "eventStart": null,
+                "isEventBased": false,
+                "isVirtual": false,
+                "kioskId": 3006,
+                "notes": null,
+                "openTime": null,
+                "publicText": "",
+                "timeZone": null,
+                "trikesAvailable": 0,
+                "latitude": 39.9522,
+                "longitude": -75.20311
+            },
+            "type": "Feature"
+        }
+    ],
+    "type": "FeatureCollection"
+}
