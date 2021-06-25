@@ -20,5 +20,7 @@ from stations import views
 
 urlpatterns = [
     path('api/v1/indego-data-fetch-and-store-it-db', views.StationCreateAPIView.as_view()),
+    path('api/v1/stations/', views.StationListRetrieveAPIView.as_view()),
+    path('api/v1/stations/<kioskId>', views.StationRetrieveAPIView.as_view()),
     path('admin/', admin.site.urls),
 ]

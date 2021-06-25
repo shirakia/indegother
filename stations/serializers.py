@@ -7,3 +7,8 @@ class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
         fields = ['kioskId', 'at']
+
+
+class StationListSerializer(serializers.ListSerializer):
+
+    child = StationSerializer()
