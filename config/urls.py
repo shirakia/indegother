@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from stations import views
+
 urlpatterns = [
+    path('api/v1/indego-data-fetch-and-store-it-db', views.StationCreateAPIView.as_view()),
     path('admin/', admin.site.urls),
 ]
