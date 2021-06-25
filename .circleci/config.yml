@@ -22,5 +22,8 @@ jobs:
           name: Generate SECRET_KEY
           command: python generate_secretkey.py > config/local_settings.py
       - run:
-          name: Run tests
-          command: python manage.py test
+          name: Run tests and make coverage
+          command: |
+            coverage run --source='.' manage.py test
+            coverage xml
+            codecov
