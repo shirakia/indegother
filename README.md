@@ -1,5 +1,7 @@
 # indegother
 
+[![CircleCI](https://circleci.com/gh/shirakia/indegother/tree/main.svg?style=svg)](https://circleci.com/gh/shirakia/indegother/tree/main)
+
 ## Setup
 1. install Python 3.9.5
 2. `pip install -r requirements.txt`

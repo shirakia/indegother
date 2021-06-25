@@ -1,0 +1,26 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@1.2
+
+workflows:
+  indegother-workflow:
+    jobs:
+      - build-and-test
+
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/python:3.9
+      - image: circleci/mongo:4.4.5
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+      - run:
+          name: Generate SECRET_KEY
+          command: python generate_secretkey.py > config/local_settings.py
+      - run:
+          name: Run tests
+          command: python manage.py test
