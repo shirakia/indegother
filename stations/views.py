@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import requests
 
@@ -6,10 +7,20 @@ from rest_framework.response import Response
 
 from .models import Station
 from .serializers import StationSerializer, StationListSerializer
+from weathers.models import Weather
+from weathers.serializers import WeatherSerializer
 
 
 def call_indego_station_api():
     url = 'https://kiosks.bicycletransit.workers.dev/phl'
+
+    req = requests.get(url)
+    return req.json()
+
+
+def call_openweathermap_api():
+    appid = os.environ['OPENWEATHERAPI_APPID']
+    url = 'https://api.openweathermap.org/data/2.5/weather?q=Philadelphia&appid=' + appid
 
     req = requests.get(url)
     return req.json()
@@ -20,16 +31,22 @@ class StationCreateAPIView(views.APIView):
     def post(self, request, *args, **kwargs):
         now = datetime.now()
 
-        body_json = call_indego_station_api()
-        for feature in body_json['features']:
+        station_json = call_indego_station_api()
+        for feature in station_json['features']:
             data = feature['properties']
             data['at'] = now
 
-            serializer = StationSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+            station_serializer = StationSerializer(data=data)
+            station_serializer.is_valid(raise_exception=True)
+            station_serializer.save()
 
-        return Response(status.HTTP_201_CREATED)
+        weather_json = call_openweathermap_api()
+        weather_json['at'] = now
+        weather_serializer = WeatherSerializer(data=weather_json)
+        weather_serializer.is_valid(raise_exception=True)
+        weather_serializer.save()
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class StationListRetrieveAPIView(views.APIView):

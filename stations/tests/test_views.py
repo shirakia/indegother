@@ -6,21 +6,27 @@ from rest_framework.test import APITestCase
 from unittest import mock
 
 from ..models import Station
+from weathers.models import Weather
 
 
 class TestStationCreateAPIView(APITestCase):
 
     URL = '/api/v1/indego-data-fetch-and-store-it-db'
 
+    @mock.patch('stations.views.call_openweathermap_api')
     @mock.patch('stations.views.call_indego_station_api')
-    def test_create_success(self, indego_mock):
+    def test_create_success(self, indego_mock, weather_mock):
         indego_mock.status = 200
         with open('stations/tests/test_indego.json') as f:
             indego_mock.return_value = json.load(f)
+        weather_mock.status = 200
+        with open('stations/tests/test_weather.json') as f:
+            weather_mock.return_value = json.load(f)
 
         response = self.client.post(self.URL, format='json')
-        self.assertEqual(response.status_code, 200)  # should be 201. But mock overwite it here...
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(Station.objects.count(), 3)
+        self.assertEqual(Weather.objects.count(), 1)
 
 
 class TestStationListRetrieveAPIView(APITestCase):
