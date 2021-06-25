@@ -6,7 +6,7 @@ class StationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Station
-        fields = ['kioskId', 'at']
+        fields = ['kioskId', 'at', 'name', 'totalDocks']
 
 
 class StationListSerializer(serializers.ListSerializer):
