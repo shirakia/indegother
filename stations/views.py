@@ -5,6 +5,7 @@ import requests
 from django.shortcuts import get_object_or_404
 from rest_framework import status, views
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 
@@ -31,6 +32,8 @@ def call_openweathermap_api():
 
 class StationCreateAPIView(views.APIView):
 
+    permission_classes = (IsAuthenticated, )
+
     @extend_schema(responses={201: ""})
     def post(self, request, *args, **kwargs):
         now = datetime.now()
@@ -54,6 +57,8 @@ class StationCreateAPIView(views.APIView):
 
 
 class StationListRetrieveAPIView(views.APIView):
+
+    permission_classes = (IsAuthenticated, )
 
     @extend_schema(request=StationListWeatherSerializer,
                    parameters=[
@@ -83,6 +88,8 @@ class StationListRetrieveAPIView(views.APIView):
 
 
 class StationRetrieveAPIView(views.APIView):
+
+    permission_classes = (IsAuthenticated, )
 
     @extend_schema(request=StationWeatherSerializer,
                    parameters=[
