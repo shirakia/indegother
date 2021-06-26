@@ -5,7 +5,7 @@ import requests
 from django.shortcuts import get_object_or_404
 from rest_framework import status, views
 from rest_framework.response import Response
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 
 from .models import Station
@@ -54,7 +54,12 @@ class StationCreateAPIView(views.APIView):
 
 class StationListRetrieveAPIView(views.APIView):
 
-    @extend_schema(responses={200: StationListWeatherSerializer},)
+    @extend_schema(request=StationListWeatherSerializer,
+                   parameters=[
+                       OpenApiParameter(
+                           name='at', description='Specific Datetime (e.g. 2019-09-01T10:00:00)',
+                           required=True, type=str), ],
+                   responses={200: StationListWeatherSerializer, 404: "", })
     def get(self, request, *args, **kwargs):
         if 'at' not in request.query_params:
             return Response({'message': "No 'at' query parameter"}, status=status.HTTP_400_BAD_REQUEST)
@@ -67,19 +72,23 @@ class StationListRetrieveAPIView(views.APIView):
         stations = Station.objects.filter(at=first_station.at)
         weather = get_object_or_404(Weather, at=first_station.at)
 
-        data = {
+        serializer = StationListWeatherSerializer({
             'at': first_station.at,
             'stations': stations,
             'weather': weather,
-        }
-        serializer = StationListWeatherSerializer(data)
+        })
 
         return Response(serializer.data, status.HTTP_200_OK)
 
 
 class StationRetrieveAPIView(views.APIView):
 
-    @extend_schema(responses={200: StationWeatherSerializer},)
+    @extend_schema(request=StationWeatherSerializer,
+                   parameters=[
+                       OpenApiParameter(
+                           name='at', description='Specific Datetime (e.g. 2019-09-01T10:00:00)',
+                           required=True, type=str), ],
+                   responses={200: StationWeatherSerializer, 404: "", })
     def get(self, request, kioskId, *args, **kwargs):
         if 'at' not in request.query_params:
             return Response({'message': "No 'at' query parameter"}, status=status.HTTP_400_BAD_REQUEST)
@@ -90,11 +99,10 @@ class StationRetrieveAPIView(views.APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         weather = get_object_or_404(Weather, at=station.at)
 
-        data = {
+        serializer = StationWeatherSerializer({
             'at': station.at,
             'station': station,
             'weather': weather,
-        }
-        serializer = StationWeatherSerializer(data)
+        })
 
         return Response(serializer.data, status.HTTP_200_OK)
