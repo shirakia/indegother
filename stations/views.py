@@ -5,9 +5,11 @@ import requests
 from django.shortcuts import get_object_or_404
 from rest_framework import status, views
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
+
 
 from .models import Station
-from .serializers import StationSerializer, StationListSerializer
+from .serializers import StationSerializer, StationListWeatherSerializer, StationWeatherSerializer
 from weathers.models import Weather
 from weathers.serializers import WeatherSerializer
 
@@ -52,6 +54,7 @@ class StationCreateAPIView(views.APIView):
 
 class StationListRetrieveAPIView(views.APIView):
 
+    @extend_schema(responses={200: StationListWeatherSerializer},)
     def get(self, request, *args, **kwargs):
         if 'at' not in request.query_params:
             return Response({'message': "No 'at' query parameter"}, status=status.HTTP_400_BAD_REQUEST)
@@ -64,20 +67,19 @@ class StationListRetrieveAPIView(views.APIView):
         stations = Station.objects.filter(at=first_station.at)
         weather = get_object_or_404(Weather, at=first_station.at)
 
-        station_list_serializer = StationListSerializer(instance=stations)
-        weather_serializer = WeatherSerializer(instance=weather)
-
-        response = {
+        data = {
             'at': first_station.at,
-            'stations': station_list_serializer.data,
-            'weather': weather_serializer.data
+            'stations': stations,
+            'weather': weather,
         }
+        serializer = StationListWeatherSerializer(data)
 
-        return Response(response, status.HTTP_200_OK)
+        return Response(serializer.data, status.HTTP_200_OK)
 
 
 class StationRetrieveAPIView(views.APIView):
 
+    @extend_schema(responses={200: StationWeatherSerializer},)
     def get(self, request, kioskId, *args, **kwargs):
         if 'at' not in request.query_params:
             return Response({'message': "No 'at' query parameter"}, status=status.HTTP_400_BAD_REQUEST)
@@ -88,13 +90,11 @@ class StationRetrieveAPIView(views.APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         weather = get_object_or_404(Weather, at=station.at)
 
-        station_serializer = StationSerializer(instance=station)
-        weather_serializer = WeatherSerializer(instance=weather)
-
-        response = {
+        data = {
             'at': station.at,
-            'station': station_serializer.data,
-            'weather': weather_serializer.data
+            'station': station,
+            'weather': weather,
         }
+        serializer = StationWeatherSerializer(data)
 
-        return Response(response, status.HTTP_200_OK)
+        return Response(serializer.data, status.HTTP_200_OK)
