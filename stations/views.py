@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 import requests
 
+from django.shortcuts import get_object_or_404
 from rest_framework import status, views
 from rest_framework.response import Response
 
@@ -61,9 +62,16 @@ class StationListRetrieveAPIView(views.APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         stations = Station.objects.filter(at=first_station.at)
+        weather = get_object_or_404(Weather, at=first_station.at)
 
-        serializer = StationListSerializer(instance=stations)
-        response = {'at': first_station.at, 'stations': serializer.data, 'weather': 'Comming soon'}
+        station_list_serializer = StationListSerializer(instance=stations)
+        weather_serializer = WeatherSerializer(instance=weather)
+
+        response = {
+            'at': first_station.at,
+            'stations': station_list_serializer.data,
+            'weather': weather_serializer.data
+        }
 
         return Response(response, status.HTTP_200_OK)
 
@@ -78,8 +86,15 @@ class StationRetrieveAPIView(views.APIView):
         station = Station.objects.filter(at__gte=query_at).order_by('at').filter(kioskId=kioskId).first()
         if station is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        weather = get_object_or_404(Weather, at=station.at)
 
-        serializer = StationSerializer(instance=station)
-        response = {'at': serializer.data['at'], 'station': serializer.data, 'weather': 'Comming soon'}
+        station_serializer = StationSerializer(instance=station)
+        weather_serializer = WeatherSerializer(instance=weather)
+
+        response = {
+            'at': station.at,
+            'station': station_serializer.data,
+            'weather': weather_serializer.data
+        }
 
         return Response(response, status.HTTP_200_OK)

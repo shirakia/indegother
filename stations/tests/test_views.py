@@ -37,6 +37,7 @@ class TestStationListRetrieveAPIView(APITestCase):
         at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
         Station.objects.create(kioskId=3000, at=at)
         Station.objects.create(kioskId=3001, at=at)
+        Weather.objects.create(at=at)
 
     def test_list_retrieve_success(self):
         query = 'at=2021-06-25T04:00:00'
@@ -54,6 +55,21 @@ class TestStationListRetrieveAPIView(APITestCase):
         self.assertEqual(response.status_code, 404)
 
 
+class TestStationListRetrieveAPIViewWhenNoWeather(APITestCase):
+
+    URL = '/api/v1/stations/'
+
+    def setUpTestData(self):
+        at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
+        Station.objects.create(kioskId=3000, at=at)
+        Station.objects.create(kioskId=3001, at=at)
+
+    def test_list_retrieve_404(self):
+        query = 'at=2021-06-25T04:00:00'
+        response = self.client.get(f'{self.URL}?{query}', format='json')
+        self.assertEqual(response.status_code, 404)
+
+
 class TestStationRetrieveAPIView(APITestCase):
 
     URL = '/api/v1/stations/'
@@ -62,6 +78,7 @@ class TestStationRetrieveAPIView(APITestCase):
         at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
         Station.objects.create(kioskId=3000, at=at)
         Station.objects.create(kioskId=3001, at=at)
+        Weather.objects.create(at=at)
 
     def test_retrieve_success(self):
         kioskId = 3000
@@ -80,4 +97,21 @@ class TestStationRetrieveAPIView(APITestCase):
         kioskId = 3000
         query = 'at=2021-06-26T04:00:00'  # future
         response = self.client.get(f'{self.URL}{kioskId}?{query}', format='json')
+        self.assertEqual(response.status_code, 404)
+
+
+class TestStationRetrieveAPIViewWhenNoWeather(APITestCase):
+
+    URL = '/api/v1/stations/'
+
+    def setUpTestData(self):
+        at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
+        Station.objects.create(kioskId=3000, at=at)
+        Station.objects.create(kioskId=3001, at=at)
+
+    def test_retrieve_404(self):
+        kioskId = 3000
+        query = 'at=2021-06-25T04:00:00'
+        response = self.client.get(f'{self.URL}{kioskId}?{query}', format='json')
+
         self.assertEqual(response.status_code, 404)
