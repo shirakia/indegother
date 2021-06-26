@@ -16,11 +16,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+
 from stations import views
 
 urlpatterns = [
     path('api/v1/indego-data-fetch-and-store-it-db', views.StationCreateAPIView.as_view()),
     path('api/v1/stations/', views.StationListRetrieveAPIView.as_view()),
     path('api/v1/stations/<kioskId>', views.StationRetrieveAPIView.as_view()),
+
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
     path('admin/', admin.site.urls),
 ]

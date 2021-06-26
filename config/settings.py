@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'stations.apps.StationsConfig',
     'weathers.apps.WeathersConfig',
+    'drf_spectacular',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +42,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Indegohter API',
+    'DESCRIPTION': 'Indego Stations and Weather API',
+    'VERSION': '1.0.0',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
