@@ -31,6 +31,7 @@ def call_openweathermap_api():
 
 class StationCreateAPIView(views.APIView):
 
+    @extend_schema(responses={201: ""})
     def post(self, request, *args, **kwargs):
         now = datetime.now()
 
