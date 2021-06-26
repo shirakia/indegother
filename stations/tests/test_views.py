@@ -2,16 +2,27 @@ import json
 from datetime import datetime
 from dateutil import tz
 
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 from unittest import mock
+
 
 from ..models import Station
 from weathers.models import Weather
 
 
+def create_token():
+    user = User.objects.create_user('test', 'test@example.com', 'password')
+    return Token.objects.create(user=user).key
+
+
 class TestStationCreateAPIView(APITestCase):
 
     URL = '/api/v1/indego-data-fetch-and-store-it-db'
+
+    def setUp(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())
 
     @mock.patch('stations.views.call_openweathermap_api')
     @mock.patch('stations.views.call_indego_station_api')
@@ -33,11 +44,15 @@ class TestStationListRetrieveAPIView(APITestCase):
 
     URL = '/api/v1/stations/'
 
-    def setUpTestData(self):
+    @classmethod
+    def setUpTestData(cls):
         at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
         Station.objects.create(kioskId=3000, at=at)
         Station.objects.create(kioskId=3001, at=at)
         Weather.objects.create(at=at)
+
+    def setUp(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())
 
     def test_list_retrieve_success(self):
         query = 'at=2021-06-25T04:00:00'
@@ -59,10 +74,14 @@ class TestStationListRetrieveAPIViewWhenNoWeather(APITestCase):
 
     URL = '/api/v1/stations/'
 
-    def setUpTestData(self):
+    @classmethod
+    def setUpTestData(cls):
         at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
         Station.objects.create(kioskId=3000, at=at)
         Station.objects.create(kioskId=3001, at=at)
+
+    def setUp(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())
 
     def test_list_retrieve_404(self):
         query = 'at=2021-06-25T04:00:00'
@@ -74,11 +93,15 @@ class TestStationRetrieveAPIView(APITestCase):
 
     URL = '/api/v1/stations/'
 
-    def setUpTestData(self):
+    @classmethod
+    def setUpTestData(cls):
         at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
         Station.objects.create(kioskId=3000, at=at)
         Station.objects.create(kioskId=3001, at=at)
         Weather.objects.create(at=at)
+
+    def setUp(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())
 
     def test_retrieve_success(self):
         kioskId = 3000
@@ -104,10 +127,14 @@ class TestStationRetrieveAPIViewWhenNoWeather(APITestCase):
 
     URL = '/api/v1/stations/'
 
-    def setUpTestData(self):
+    @classmethod
+    def setUpTestData(cls):
         at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
         Station.objects.create(kioskId=3000, at=at)
         Station.objects.create(kioskId=3001, at=at)
+
+    def setUp(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())
 
     def test_retrieve_404(self):
         kioskId = 3000
@@ -115,3 +142,24 @@ class TestStationRetrieveAPIViewWhenNoWeather(APITestCase):
         response = self.client.get(f'{self.URL}{kioskId}?{query}', format='json')
 
         self.assertEqual(response.status_code, 404)
+
+
+class TestWithoutToken(APITestCase):
+
+    def test_create_401(self):
+        url = '/api/v1/indego-data-fetch-and-store-it-db'
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, 401)
+
+    def test_stations_list_retreice_401(self):
+        url = '/api/v1/stations/'
+        query = 'at=2021-06-25T04:00:00'
+        response = self.client.get(f'{url}?{query}', format='json')
+        self.assertEqual(response.status_code, 401)
+
+    def test_stations_retreice_401(self):
+        url = '/api/v1/stations/'
+        kioskId = 3000
+        query = 'at=2021-06-25T04:00:00'
+        response = self.client.get(f'{url}{kioskId}?{query}', format='json')
+        self.assertEqual(response.status_code, 401)
