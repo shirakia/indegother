@@ -1,15 +1,27 @@
+import os
 from datetime import datetime
 import requests
 
+from django.shortcuts import get_object_or_404
 from rest_framework import status, views
 from rest_framework.response import Response
 
 from .models import Station
 from .serializers import StationSerializer, StationListSerializer
+from weathers.models import Weather
+from weathers.serializers import WeatherSerializer
 
 
 def call_indego_station_api():
     url = 'https://kiosks.bicycletransit.workers.dev/phl'
+
+    req = requests.get(url)
+    return req.json()
+
+
+def call_openweathermap_api():
+    appid = os.environ['OPENWEATHERAPI_APPID']
+    url = 'https://api.openweathermap.org/data/2.5/weather?q=Philadelphia&appid=' + appid
 
     req = requests.get(url)
     return req.json()
@@ -20,16 +32,22 @@ class StationCreateAPIView(views.APIView):
     def post(self, request, *args, **kwargs):
         now = datetime.now()
 
-        body_json = call_indego_station_api()
-        for feature in body_json['features']:
+        station_json = call_indego_station_api()
+        for feature in station_json['features']:
             data = feature['properties']
             data['at'] = now
 
-            serializer = StationSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+            station_serializer = StationSerializer(data=data)
+            station_serializer.is_valid(raise_exception=True)
+            station_serializer.save()
 
-        return Response(status.HTTP_201_CREATED)
+        weather_json = call_openweathermap_api()
+        weather_json['at'] = now
+        weather_serializer = WeatherSerializer(data=weather_json)
+        weather_serializer.is_valid(raise_exception=True)
+        weather_serializer.save()
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class StationListRetrieveAPIView(views.APIView):
@@ -44,9 +62,16 @@ class StationListRetrieveAPIView(views.APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         stations = Station.objects.filter(at=first_station.at)
+        weather = get_object_or_404(Weather, at=first_station.at)
 
-        serializer = StationListSerializer(instance=stations)
-        response = {'at': first_station.at, 'stations': serializer.data, 'weather': 'Comming soon'}
+        station_list_serializer = StationListSerializer(instance=stations)
+        weather_serializer = WeatherSerializer(instance=weather)
+
+        response = {
+            'at': first_station.at,
+            'stations': station_list_serializer.data,
+            'weather': weather_serializer.data
+        }
 
         return Response(response, status.HTTP_200_OK)
 
@@ -61,8 +86,15 @@ class StationRetrieveAPIView(views.APIView):
         station = Station.objects.filter(at__gte=query_at).order_by('at').filter(kioskId=kioskId).first()
         if station is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        weather = get_object_or_404(Weather, at=station.at)
 
-        serializer = StationSerializer(instance=station)
-        response = {'at': serializer.data['at'], 'station': serializer.data, 'weather': 'Comming soon'}
+        station_serializer = StationSerializer(instance=station)
+        weather_serializer = WeatherSerializer(instance=weather)
+
+        response = {
+            'at': station.at,
+            'station': station_serializer.data,
+            'weather': weather_serializer.data
+        }
 
         return Response(response, status.HTTP_200_OK)

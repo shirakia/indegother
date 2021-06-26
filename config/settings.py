@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'stations.apps.StationsConfig',
+    'weathers.apps.WeathersConfig',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
