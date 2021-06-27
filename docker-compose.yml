@@ -1,0 +1,56 @@
+version: '3.1'
+
+volumes:
+  data-db:
+
+services:
+  mongodb:
+    image: mongo
+    restart: always
+    volumes:
+      - ./data-db:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
+      MONGO_INITDB_DATABASE: indegother
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: mongoadmin
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_BASICAUTH_USERNAME: root
+      ME_CONFIG_BASICAUTH_PASSWORD: mongoadmin
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+  web:
+    image: app
+    restart: always
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    links:
+      - mongodb
+    depends_on:
+      - migration
+
+  migration:
+    build: .
+    image: app
+    command: python manage.py migrate
+    volumes:
+      - .:/code
+    links:
+      - mongodb
+    depends_on:
+      - mongodb

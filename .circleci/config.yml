@@ -19,9 +19,6 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
       - run:
-          name: Generate SECRET_KEY
-          command: python generate_secretkey.py > config/local_settings.py
-      - run:
           name: Run tests and make coverage
           command: |
             coverage run --source='.' manage.py test
