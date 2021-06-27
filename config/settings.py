@@ -91,20 +91,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'djongo',
-        'ENFORCE_SCHEMA': False,
-        'NAME': 'indegother',
-        'CLIENT': {
-            'host': 'mongodb://mongodb:27017',
-            'username': 'root',
-            'password': 'mongoadmin',
-            'authSource': 'admin',
-            'authMechanism': 'SCRAM-SHA-1',
+if os.environ.get('CIRCLECI', ''):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'djongo',
+            'ENFORCE_SCHEMA': False,
+            'NAME': 'indegother',
         }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'djongo',
+            'ENFORCE_SCHEMA': False,
+            'NAME': 'indegother',
+            'CLIENT': {
+                'host': 'mongodb://mongodb:27017',
+                'username': 'root',
+                'password': 'mongoadmin',
+                'authSource': 'admin',
+                'authMechanism': 'SCRAM-SHA-1',
+            }
+        }
+    }
 
 
 # Password validation
