@@ -11,6 +11,13 @@
 5. `python manage.py drf_create_token <username>` (Set step.4's username here)
 6. `python manage.py runserver`
 
+## Setup and Run server（Docker)
+1. Install docker
+2. `docker-compose build`
+3. `docker-compose run web python manage.py createsuperuser`
+4. `docker-compose run web python manage.py drf_create_token <username>`
+5. `docker-compose up`
+
 ## Try API endponts
 
 1. Go to `http://127.0.0.1:8000/api/schema/swagger-ui/`
