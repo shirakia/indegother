@@ -1,7 +1,13 @@
 # indegother
 
+Indego station + Open Weather Map
+
 [![CircleCI](https://circleci.com/gh/shirakia/indegother/tree/main.svg?style=svg)](https://circleci.com/gh/shirakia/indegother/tree/main)
 [![codecov](https://codecov.io/gh/shirakia/indegother/branch/main/graph/badge.svg?token=MSHF4XNC7K)](https://codecov.io/gh/shirakia/indegother)
+
+## Swagger UI
+
+http://54.150.199.176/api/schema/swagger-ui
 
 ## Setup and Run server
 1. Install Python 3.9.5 and MongoDB
