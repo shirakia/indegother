@@ -25,7 +25,7 @@ from .local_settings import *
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']
 
 
 # Application definition
@@ -94,7 +94,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
+        'ENFORCE_SCHEMA': False,
         'NAME': 'indegother',
+        'CLIENT': {
+            'host': 'mongodb://mongodb:27017',
+            'username': 'root',
+            'password': 'mongoadmin',
+            'authSource': 'admin',
+            'authMechanism': 'SCRAM-SHA-1',
+        }
     }
 }
 
