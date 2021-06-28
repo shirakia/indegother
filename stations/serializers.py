@@ -10,7 +10,16 @@ class StationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Station
-        fields = ['kioskId', 'at', 'name', 'totalDocks']
+        exclude = ['uuid']
+        extra_kwargs = {
+            'at': {'write_only': True},
+            'kioskId': {'write_only': True},
+        }
+
+    document = serializers.DictField()
+
+    def to_representation(self, instance):
+        return super().to_representation(instance)['document']
 
 
 class StationListSerializer(serializers.ListSerializer):

@@ -47,9 +47,9 @@ class TestStationListRetrieveAPIView(APITestCase):
     @classmethod
     def setUpTestData(cls):
         at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
-        Station.objects.create(kioskId=3000, at=at)
-        Station.objects.create(kioskId=3001, at=at)
-        Weather.objects.create(at=at)
+        Station.objects.create(kioskId=3000, at=at, document={'dummy': 'document'})
+        Station.objects.create(kioskId=3001, at=at, document={'dummy': 'document'})
+        Weather.objects.create(at=at, document={'dummy': 'document'})
 
     def setUp(self):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())
@@ -77,8 +77,8 @@ class TestStationListRetrieveAPIViewWhenNoWeather(APITestCase):
     @classmethod
     def setUpTestData(cls):
         at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
-        Station.objects.create(kioskId=3000, at=at)
-        Station.objects.create(kioskId=3001, at=at)
+        Station.objects.create(kioskId=3000, at=at, document={'dummy': 'document'})
+        Station.objects.create(kioskId=3001, at=at, document={'dummy': 'document'})
 
     def setUp(self):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())
@@ -96,9 +96,9 @@ class TestStationRetrieveAPIView(APITestCase):
     @classmethod
     def setUpTestData(cls):
         at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
-        Station.objects.create(kioskId=3000, at=at)
-        Station.objects.create(kioskId=3001, at=at)
-        Weather.objects.create(at=at)
+        Station.objects.create(kioskId=3000, at=at, document={'dummy': 'document'})
+        Station.objects.create(kioskId=3001, at=at, document={'dummy': 'document'})
+        Weather.objects.create(at=at, document={'dummy': 'document'})
 
     def setUp(self):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())
@@ -109,7 +109,6 @@ class TestStationRetrieveAPIView(APITestCase):
         response = self.client.get(f'{self.URL}{kioskId}?{query}', format='json')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['station']['kioskId'], kioskId)
 
     def test_retrieve_400_when_no_query(self):
         kioskId = 3000
@@ -130,8 +129,8 @@ class TestStationRetrieveAPIViewWhenNoWeather(APITestCase):
     @classmethod
     def setUpTestData(cls):
         at = datetime(2021, 6, 25, 20, 0, 0, tzinfo=tz.tzutc())
-        Station.objects.create(kioskId=3000, at=at)
-        Station.objects.create(kioskId=3001, at=at)
+        Station.objects.create(kioskId=3000, at=at, document={'dummy': 'document'})
+        Station.objects.create(kioskId=3001, at=at, document={'dummy': 'document'})
 
     def setUp(self):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())

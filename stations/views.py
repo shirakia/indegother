@@ -40,16 +40,22 @@ class StationCreateAPIView(views.APIView):
 
         station_json = call_indego_station_api()
         for feature in station_json['features']:
-            data = feature['properties']
-            data['at'] = now
+            data = {
+                'at': now,
+                'kioskId': feature['properties']['kioskId'],
+                'document': feature,
+            }
 
             station_serializer = StationSerializer(data=data)
             station_serializer.is_valid(raise_exception=True)
             station_serializer.save()
 
         weather_json = call_openweathermap_api()
-        weather_json['at'] = now
-        weather_serializer = WeatherSerializer(data=weather_json)
+        data = {
+            'at': now,
+            'document': weather_json,
+        }
+        weather_serializer = WeatherSerializer(data=data)
         weather_serializer.is_valid(raise_exception=True)
         weather_serializer.save()
 
