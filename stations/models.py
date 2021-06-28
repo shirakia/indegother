@@ -15,9 +15,9 @@ class Station(models.Model):
         ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    kioskId = models.IntegerField(null=False, db_index=True)
+    kioskId = models.IntegerField(db_index=True)
     at = models.DateTimeField(db_index=True)
     document = models.JSONField()
 
     def __str__(self):
-        return f'{self.kioskId} at {self.at}'
+        return f'Station[UUID:{self.uuid}] kioskId: {self.kioskId}, at:{self.at}'

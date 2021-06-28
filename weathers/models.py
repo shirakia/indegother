@@ -14,4 +14,4 @@ class Weather(models.Model):
     document = models.JSONField()
 
     def __str__(self):
-        return f'{self.at}'
+        return f'Weather[{self.uuid}] at:{self.at}'

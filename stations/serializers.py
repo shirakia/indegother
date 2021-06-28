@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, validators
 from .models import Station
 from weathers.serializers import WeatherSerializer
 
@@ -12,9 +12,15 @@ class StationSerializer(serializers.ModelSerializer):
         model = Station
         exclude = ['uuid']
         extra_kwargs = {
-            'at': {'write_only': True},
             'kioskId': {'write_only': True},
+            'at': {'write_only': True},
         }
+        validators = [
+            validators.UniqueTogetherValidator(
+                queryset=Station.objects.all(),
+                fields=['kioskId', 'at']
+            )
+        ]
 
     document = serializers.DictField()
 
