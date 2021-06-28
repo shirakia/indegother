@@ -14,3 +14,6 @@ class WeatherSerializer(serializers.ModelSerializer):
 
     at = serializers.DateTimeField(validators=[validators.UniqueValidator(queryset=Weather.objects.all())])
     document = serializers.DictField()
+
+    def to_representation(self, instance):
+        return dict(super().to_representation(instance)['document'])
