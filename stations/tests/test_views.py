@@ -12,7 +12,7 @@ from ..models import Station
 from weathers.models import Weather
 
 
-def create_token():
+def create_token() -> str:
     user = User.objects.create_user('test', 'test@example.com', 'password')
     return Token.objects.create(user=user).key
 

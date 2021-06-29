@@ -16,4 +16,4 @@ class WeatherSerializer(serializers.ModelSerializer):
     document = serializers.DictField()
 
     def to_representation(self, instance):
-        return dict(super().to_representation(instance)['document'])
+        return super().to_representation(instance)['document']

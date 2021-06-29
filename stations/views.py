@@ -18,14 +18,14 @@ from weathers.models import Weather
 from weathers.serializers import WeatherSerializer
 
 
-def call_indego_station_api():
+def call_indego_station_api() -> str:
     url = 'https://kiosks.bicycletransit.workers.dev/phl'
 
     req = requests.get(url)
     return req.json()
 
 
-def call_openweathermap_api():
+def call_openweathermap_api() -> str:
     appid = os.environ['OPENWEATHERAPI_APPID']
     url = 'https://api.openweathermap.org/data/2.5/weather?q=Philadelphia&appid=' + appid
 
@@ -116,7 +116,7 @@ class StationRetrieveAPIView(views.APIView):
 
     permission_classes = (IsAuthenticated, )
 
-    @ extend_schema(
+    @extend_schema(
         description=('Snapshot of one station at a specific time<br>'
                      'The response is the first available on or after the given time.'),
         request=StationWeatherSerializer,
