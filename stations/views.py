@@ -22,11 +22,10 @@ class StationCreateAPIView(views.APIView):
 
     @extend_schema(
         description=(
-            'An endpoints which downloads fresh data from Indego GeoJSON station status API '
+            'An endpoint which downloads fresh data from Indego GeoJSON station status API'
             'and stores it inside MongoDB.<br>'
-            'This endpoint downloads fresh weather data from Open Weather Map API at the same *at* time<br >'
-            '<br>'
-            '**Store data only when both Indego and WeatherMapAPI data area valid.**'),
+            'This endpoint downloads fresh weather data from Open Weather Map API at the same time<br><br>'
+            '**Stores data only when both Indego and WeatherMapAPI data are valid.**'),
         responses={
             201: OpenApiResponse('201', description='When successfully created'),
             500: OpenApiResponse('500', description='When cannot connect to external API'),
@@ -68,7 +67,8 @@ class StationListRetrieveAPIView(views.APIView):
         description=(
             'Snapshot of all stations at a specified time.<br>'
             'This endpoint responds with the actual time of the first snapshot of data on '
-            'or after the requested time and the data.'),
+            'or after the requested time and the data.<br><br>'
+            '**Returns data only when both station list and weather data are found for specified at.**'),
         request=StationListWeatherSerializer,
         parameters=[
             OpenApiParameter(
@@ -107,8 +107,9 @@ class StationRetrieveAPIView(views.APIView):
     permission_classes = (IsAuthenticated, )
 
     @extend_schema(
-        description=('Snapshot of one station at a specific time<br>'
-                     'The response is the first available on or after the given time.'),
+        description=('Snapshot of one station at a specific time.<br>'
+                     'The response is the first available on or after the given time.<br><br>'
+                     '**Returns data only when both station and weather data are found for specified at.**'),
         request=StationWeatherSerializer,
         parameters=[OpenApiParameter(
             name='at', description='Specific Datetime (e.g. 2019-09-01T10:00:00)',
