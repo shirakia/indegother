@@ -11,7 +11,7 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiRespon
 
 from lib import utils
 from .models import Station
-from .serializers import StationSerializer, StationListWeatherSerializer, StationWeatherSerializer
+from .serializers import StationListSerializer, StationListWeatherSerializer, StationWeatherSerializer
 from weathers.models import Weather
 from weathers.serializers import WeatherSerializer
 
@@ -24,7 +24,9 @@ class StationCreateAPIView(views.APIView):
         description=(
             'An endpoints which downloads fresh data from Indego GeoJSON station status API '
             'and stores it inside MongoDB.<br>'
-            'This endpoint downloads fresh weather data from Open Weather Map API at the same time of *at*'),
+            'This endpoint downloads fresh weather data from Open Weather Map API at the same *at* time<br >'
+            '<br>'
+            '**Store data only when both Indego and WeatherMapAPI data area valid.**'),
         responses={
             201: OpenApiResponse('201', description='When successfully created'),
             500: OpenApiResponse('500', description='When cannot connect to external API'),
@@ -37,27 +39,22 @@ class StationCreateAPIView(views.APIView):
         except requests.exceptions.RequestException:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        for feature in station_json['features']:
-            data = {
-                'at': now,
-                'kioskId': feature['properties']['kioskId'],
-                'document': feature,
-            }
-
-            station_serializer = StationSerializer(data=data)
-            station_serializer.is_valid(raise_exception=True)
-            station_serializer.save()
+        station_list_data = [{'at': now, 'kioskId': feature['properties']['kioskId'], 'document': feature}
+                             for feature in station_json['features']]
+        station_list_serializer = StationListSerializer(data=station_list_data)
+        station_list_serializer.is_valid(raise_exception=True)
 
         try:
             weather_json = utils.call_openweathermap_api()
         except requests.exceptions.RequestException:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        data = {
-            'at': now,
-            'document': weather_json,
-        }
-        weather_serializer = WeatherSerializer(data=data)
+
+        weather_data = {'at': now, 'document': weather_json}
+        weather_serializer = WeatherSerializer(data=weather_data)
         weather_serializer.is_valid(raise_exception=True)
+
+        # save when both station list and weather are valid
+        station_list_serializer.save()
         weather_serializer.save()
 
         return Response(status=status.HTTP_201_CREATED)

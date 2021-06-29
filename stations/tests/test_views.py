@@ -53,6 +53,19 @@ class TestStationCreateAPIView(APITestCase):
         self.assertEqual(Station.objects.count(), 0)
         self.assertEqual(Weather.objects.count(), 0)
 
+    @mock.patch('lib.utils.call_openweathermap_api')
+    @mock.patch('lib.utils.call_indego_station_api')
+    def test_weather_api_error_500(self, indego_mock, weather_mock):
+        indego_mock.status = 200
+        with open('stations/tests/test_indego.json') as f:
+            indego_mock.return_value = json.load(f)
+        weather_mock.side_effect = requests.exceptions.RequestException
+
+        response = self.client.post(self.URL, format='json')
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(Station.objects.count(), 0)
+        self.assertEqual(Weather.objects.count(), 0)
+
 
 class TestStationListRetrieveAPIView(APITestCase):
 
