@@ -24,8 +24,8 @@ class TestStationCreateAPIView(APITestCase):
     def setUp(self):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())
 
-    @mock.patch('stations.views.call_openweathermap_api')
-    @mock.patch('stations.views.call_indego_station_api')
+    @mock.patch('lib.utils.call_openweathermap_api')
+    @mock.patch('lib.utils.call_indego_station_api')
     def test_create_success(self, indego_mock, weather_mock):
         indego_mock.status = 200
         with open('stations/tests/test_indego.json') as f:

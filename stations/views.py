@@ -1,6 +1,4 @@
-import os
 from datetime import datetime
-import requests
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -11,26 +9,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 
-
+from lib import utils
 from .models import Station
 from .serializers import StationSerializer, StationListWeatherSerializer, StationWeatherSerializer
 from weathers.models import Weather
 from weathers.serializers import WeatherSerializer
-
-
-def call_indego_station_api() -> str:
-    url = 'https://kiosks.bicycletransit.workers.dev/phl'
-
-    req = requests.get(url)
-    return req.json()
-
-
-def call_openweathermap_api() -> str:
-    appid = os.environ['OPENWEATHERAPI_APPID']
-    url = 'https://api.openweathermap.org/data/2.5/weather?q=Philadelphia&appid=' + appid
-
-    req = requests.get(url)
-    return req.json()
 
 
 class StationCreateAPIView(views.APIView):
@@ -46,7 +29,7 @@ class StationCreateAPIView(views.APIView):
     def post(self, request, *args, **kwargs):
         now = datetime.now()
 
-        station_json = call_indego_station_api()
+        station_json = utils.call_indego_station_api()
         for feature in station_json['features']:
             data = {
                 'at': now,
@@ -58,7 +41,7 @@ class StationCreateAPIView(views.APIView):
             station_serializer.is_valid(raise_exception=True)
             station_serializer.save()
 
-        weather_json = call_openweathermap_api()
+        weather_json = utils.call_openweathermap_api()
         data = {
             'at': now,
             'document': weather_json,
