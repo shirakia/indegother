@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 
 
 from .models import Station
@@ -34,22 +34,33 @@ class StationCreateAPIView(views.APIView):
 
     permission_classes = (IsAuthenticated, )
 
-    @extend_schema(responses={201: ""})
+    @extend_schema(
+        description=(
+            'An endpoints which downloads fresh data from Indego GeoJSON station status API '
+            'and stores it inside MongoDB.<br>'
+            'This endpoint downloads fresh weather data from Open Weather Map API at the same time of *at*'),
+        responses={201: None})
     def post(self, request, *args, **kwargs):
         now = datetime.now()
 
         station_json = call_indego_station_api()
         for feature in station_json['features']:
-            data = feature['properties']
-            data['at'] = now
+            data = {
+                'at': now,
+                'kioskId': feature['properties']['kioskId'],
+                'document': feature,
+            }
 
             station_serializer = StationSerializer(data=data)
             station_serializer.is_valid(raise_exception=True)
             station_serializer.save()
 
         weather_json = call_openweathermap_api()
-        weather_json['at'] = now
-        weather_serializer = WeatherSerializer(data=weather_json)
+        data = {
+            'at': now,
+            'document': weather_json,
+        }
+        weather_serializer = WeatherSerializer(data=data)
         weather_serializer.is_valid(raise_exception=True)
         weather_serializer.save()
 
@@ -60,12 +71,21 @@ class StationListRetrieveAPIView(views.APIView):
 
     permission_classes = (IsAuthenticated, )
 
-    @extend_schema(request=StationListWeatherSerializer,
-                   parameters=[
-                       OpenApiParameter(
-                           name='at', description='Specific Datetime (e.g. 2019-09-01T10:00:00)',
-                           required=True, type=str), ],
-                   responses={200: StationListWeatherSerializer, 404: "", })
+    @extend_schema(
+        description=(
+            'Snapshot of all stations at a specified time.<br>'
+            'This endpoint responds with the actual time of the first snapshot of data on '
+            'or after the requested time and the data.'),
+        request=StationListWeatherSerializer,
+        parameters=[
+            OpenApiParameter(
+                name='at', description='Specific Datetime (e.g. 2019-09-01T10:00:00)', required=True,
+                type=str), ],
+        responses={
+            200: StationListWeatherSerializer,
+            400: OpenApiResponse('400', description='When no *at* query parameter'),
+            404: OpenApiResponse('404', description='When no stations or no weather for requested *kioskId* and *at*'),  # noqa
+        })
     def get(self, request, *args, **kwargs):
         if 'at' not in request.query_params:
             return Response({'message': "No 'at' query parameter"}, status=status.HTTP_400_BAD_REQUEST)
@@ -91,12 +111,18 @@ class StationRetrieveAPIView(views.APIView):
 
     permission_classes = (IsAuthenticated, )
 
-    @extend_schema(request=StationWeatherSerializer,
-                   parameters=[
-                       OpenApiParameter(
-                           name='at', description='Specific Datetime (e.g. 2019-09-01T10:00:00)',
-                           required=True, type=str), ],
-                   responses={200: StationWeatherSerializer, 404: "", })
+    @ extend_schema(
+        description=('Snapshot of one station at a specific time<br>'
+                     'The response is the first available on or after the given time.'),
+        request=StationWeatherSerializer,
+        parameters=[OpenApiParameter(
+            name='at', description='Specific Datetime (e.g. 2019-09-01T10:00:00)',
+            required=True, type=str), ],
+        responses={
+            200: StationWeatherSerializer,
+            400: OpenApiResponse('400', description='When no *at* query parameter'),
+            404: OpenApiResponse('404', description='When no station or no weather for requested *kioskId* and *at*')  # noqa
+        })
     def get(self, request, kioskId, *args, **kwargs):
         if 'at' not in request.query_params:
             return Response({'message': "No 'at' query parameter"}, status=status.HTTP_400_BAD_REQUEST)

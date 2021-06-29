@@ -1,16 +1,31 @@
-from rest_framework import serializers
-from .models import Station
-from weathers.serializers import WeatherSerializer
-
+from rest_framework import serializers, validators
 from drf_spectacular.utils import extend_schema_field
 from drf_spectacular.types import OpenApiTypes
+
+from .models import Station
+from weathers.serializers import WeatherSerializer
 
 
 class StationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Station
-        fields = ['kioskId', 'at', 'name', 'totalDocks']
+        exclude = ['uuid']
+        extra_kwargs = {
+            'kioskId': {'write_only': True},
+            'at': {'write_only': True},
+        }
+        validators = [
+            validators.UniqueTogetherValidator(
+                queryset=Station.objects.all(),
+                fields=['kioskId', 'at']
+            )
+        ]
+
+    document = serializers.DictField()
+
+    def to_representation(self, instance):
+        return super().to_representation(instance)['document']
 
 
 class StationListSerializer(serializers.ListSerializer):
@@ -31,12 +46,12 @@ class StationListWeatherSerializer(serializers.Serializer):
     def get_at(self, obj):
         return obj['at']
 
-    @extend_schema_field(StationSerializer(many=True))
+    @extend_schema_field(serializers.ListField(child=serializers.DictField()))
     def get_stations(self, obj):
         serializer = StationListSerializer(instance=obj['stations'])
         return serializer.data
 
-    @extend_schema_field(WeatherSerializer)
+    @extend_schema_field(serializers.DictField())
     def get_weather(self, obj):
         serializer = WeatherSerializer(instance=obj['weather'])
         return serializer.data
@@ -55,12 +70,12 @@ class StationWeatherSerializer(serializers.Serializer):
     def get_at(self, obj):
         return obj['at']
 
-    @extend_schema_field(StationSerializer)
+    @extend_schema_field(serializers.DictField())
     def get_station(self, obj):
         serializer = StationSerializer(instance=obj['station'])
         return serializer.data
 
-    @extend_schema_field(WeatherSerializer)
+    @extend_schema_field(serializers.DictField())
     def get_weather(self, obj):
         serializer = WeatherSerializer(instance=obj['weather'])
         return serializer.data
