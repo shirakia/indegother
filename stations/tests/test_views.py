@@ -29,10 +29,10 @@ class TestStationCreateAPIView(APITestCase):
     @mock.patch('common.utils.call_indego_station_api')
     def test_create_success(self, indego_mock, weather_mock):
         indego_mock.status = 200
-        with open('stations/tests/test_indego.json') as f:
+        with open('stations/tests/indego_sample.json') as f:
             indego_mock.return_value = json.load(f)
         weather_mock.status = 200
-        with open('stations/tests/test_weather.json') as f:
+        with open('weathers/tests/openweatherapi_sample.json') as f:
             weather_mock.return_value = json.load(f)
 
         response = self.client.post(self.URL, format='json')
@@ -45,7 +45,7 @@ class TestStationCreateAPIView(APITestCase):
     def test_indego_api_error_500(self, indego_mock, weather_mock):
         indego_mock.side_effect = requests.exceptions.RequestException
         weather_mock.status = 200
-        with open('stations/tests/test_weather.json') as f:
+        with open('weathers/tests/openweatherapi_sample.json') as f:
             weather_mock.return_value = json.load(f)
 
         response = self.client.post(self.URL, format='json')
@@ -57,7 +57,7 @@ class TestStationCreateAPIView(APITestCase):
     @mock.patch('common.utils.call_indego_station_api')
     def test_weather_api_error_500(self, indego_mock, weather_mock):
         indego_mock.status = 200
-        with open('stations/tests/test_indego.json') as f:
+        with open('stations/tests/indego_sample.json') as f:
             indego_mock.return_value = json.load(f)
         weather_mock.side_effect = requests.exceptions.RequestException
 
