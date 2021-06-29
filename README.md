@@ -9,6 +9,8 @@ Indego station + Open Weather Map
 
 http://54.150.199.176/api/schema/swagger-ui
 
+Go with this token `Token 8cfb7171617589b8e7bd06c328f921a7697133bd`
+
 ## Setup and Run server
 1. Install docker
 2. `docker-compose build`
@@ -41,8 +43,7 @@ http://54.150.199.176/api/schema/swagger-ui
 - Use MongoDB with proper indexes and unique constraints
 - Application-level transactions
 - Page cache for GET 2 endpoints
-- Unit tests for mainly validations
-- Functional tests for APIs
+- Unit tests for mainly validations and Functional tests for APIs (27 tests for 95% coverage)
 - Hosting to an instance of AWS EC2
 - API documentation using Swagger
 - Use Linter auto correct
@@ -55,3 +56,24 @@ http://54.150.199.176/api/schema/swagger-ui
 - Environment variables are hard coded in Dockerfile
 - Proper production environment server(https, DNS, load-balancing, separated DB servers, logging, monitoring, proper env variables handling, Same/Cross-origin policy, etc...)
 - No deployment automation
+
+## Main codes to be reviewed
+- Models
+    - Station https://github.com/shirakia/indegother/blob/main/stations/models.py
+    - Weather https://github.com/shirakia/indegother/blob/main/weathers/models.py
+- Serializers
+    - Station https://github.com/shirakia/indegother/blob/main/stations/serializers.py
+    - Weather https://github.com/shirakia/indegother/blob/main/weathers/serializers.py
+- Views
+    - Station https://github.com/shirakia/indegother/blob/main/stations/views.py
+- Tests
+    - Station Views      https://github.com/shirakia/indegother/blob/main/stations/tests/test_views.py
+    - Station Serializer https://github.com/shirakia/indegother/blob/main/stations/tests/test_serializers.py
+    - Weather Serializer https://github.com/shirakia/indegother/blob/main/weathers/tests/test_serializers.py
+- Others(less important)
+    - utils https://github.com/shirakia/indegother/blob/main/common/utils.py
+    - Django setting https://github.com/shirakia/indegother/blob/main/config/settings.py
+    - urls https://github.com/shirakia/indegother/blob/main/config/urls.py
+    - Dockerfile https://github.com/shirakia/indegother/blob/main/Dockerfile
+    - docker-compose.yml https://github.com/shirakia/indegother/blob/main/docker-compose.yml
+    - circleci conf https://github.com/shirakia/indegother/blob/main/.circleci/config.yml
