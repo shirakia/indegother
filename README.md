@@ -39,6 +39,7 @@ http://54.150.199.176/api/schema/swagger-ui
 - Token Authentication
 - Implement 3 endpoints as the challenge describes
 - Use MongoDB with proper indexes and unique constraints
+- Application-level transactions
 - Page cache for GET 2 endpoints
 - Unit tests for mainly validations
 - Functional tests for APIs
@@ -50,6 +51,7 @@ http://54.150.199.176/api/schema/swagger-ui
 ## Limitations
 - No user registration, no token generation, no token expiration
 - No retry for external API request
+- No database-level transactions
 - Environment variables are hard coded in Dockerfile
 - Proper production environment server(https, DNS, load-balancing, separated DB servers, logging, monitoring, proper env variables handling, Same/Cross-origin policy, etc...)
 - No deployment automation
