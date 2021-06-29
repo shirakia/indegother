@@ -2,6 +2,9 @@ import os
 from datetime import datetime
 import requests
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
 from django.shortcuts import get_object_or_404
 from rest_framework import status, views
 from rest_framework.response import Response
@@ -86,6 +89,8 @@ class StationListRetrieveAPIView(views.APIView):
             400: OpenApiResponse('400', description='When no *at* query parameter'),
             404: OpenApiResponse('404', description='When no stations or no weather for requested *kioskId* and *at*'),  # noqa
         })
+    @method_decorator(cache_page(60*60*24))
+    @method_decorator(vary_on_headers("Authorization",))
     def get(self, request, *args, **kwargs):
         if 'at' not in request.query_params:
             return Response({'message': "No 'at' query parameter"}, status=status.HTTP_400_BAD_REQUEST)
@@ -123,6 +128,8 @@ class StationRetrieveAPIView(views.APIView):
             400: OpenApiResponse('400', description='When no *at* query parameter'),
             404: OpenApiResponse('404', description='When no station or no weather for requested *kioskId* and *at*')  # noqa
         })
+    @method_decorator(cache_page(60*60*24))
+    @method_decorator(vary_on_headers("Authorization",))
     def get(self, request, kioskId, *args, **kwargs):
         if 'at' not in request.query_params:
             return Response({'message': "No 'at' query parameter"}, status=status.HTTP_400_BAD_REQUEST)
