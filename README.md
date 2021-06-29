@@ -49,7 +49,7 @@ http://54.150.199.176/api/schema/swagger-ui
 
 ## Limitations
 - No user registration, no token generation, no token expiration
-- No type hinting
+- No retry for external API request
 - Environment variables are hard coded in Dockerfile
 - Proper production environment server(https, DNS, load-balancing, separated DB servers, logging, monitoring, proper env variables handling, Same/Cross-origin policy, etc...)
 - No deployment automation
