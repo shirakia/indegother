@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import requests
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
@@ -25,11 +25,18 @@ class StationCreateAPIView(views.APIView):
             'An endpoints which downloads fresh data from Indego GeoJSON station status API '
             'and stores it inside MongoDB.<br>'
             'This endpoint downloads fresh weather data from Open Weather Map API at the same time of *at*'),
-        responses={201: None})
+        responses={
+            201: OpenApiResponse('201', description='When successfully created'),
+            500: OpenApiResponse('500', description='When cannot connect to external API'),
+        })
     def post(self, request, *args, **kwargs):
         now = datetime.now()
 
-        station_json = utils.call_indego_station_api()
+        try:
+            station_json = utils.call_indego_station_api()
+        except requests.exceptions.RequestException:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         for feature in station_json['features']:
             data = {
                 'at': now,
@@ -41,7 +48,10 @@ class StationCreateAPIView(views.APIView):
             station_serializer.is_valid(raise_exception=True)
             station_serializer.save()
 
-        weather_json = utils.call_openweathermap_api()
+        try:
+            weather_json = utils.call_openweathermap_api()
+        except requests.exceptions.RequestException:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         data = {
             'at': now,
             'document': weather_json,

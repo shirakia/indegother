@@ -31,3 +31,4 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
 ]
+handler500 = 'rest_framework.exceptions.server_error'

@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from dateutil import tz
 
+import requests
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
@@ -38,6 +39,19 @@ class TestStationCreateAPIView(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Station.objects.count(), 3)
         self.assertEqual(Weather.objects.count(), 1)
+
+    @mock.patch('lib.utils.call_openweathermap_api')
+    @mock.patch('lib.utils.call_indego_station_api')
+    def test_indego_api_error_500(self, indego_mock, weather_mock):
+        indego_mock.side_effect = requests.exceptions.RequestException
+        weather_mock.status = 200
+        with open('stations/tests/test_weather.json') as f:
+            weather_mock.return_value = json.load(f)
+
+        response = self.client.post(self.URL, format='json')
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(Station.objects.count(), 0)
+        self.assertEqual(Weather.objects.count(), 0)
 
 
 class TestStationListRetrieveAPIView(APITestCase):
