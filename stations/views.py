@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 
-from lib import utils
+from common import utils
 from .models import Station
 from .serializers import StationListSerializer, StationListWeatherSerializer, StationWeatherSerializer
 from weathers.models import Weather
