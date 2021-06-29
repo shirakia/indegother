@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from dateutil import tz
 
+import requests
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
@@ -12,7 +13,7 @@ from ..models import Station
 from weathers.models import Weather
 
 
-def create_token():
+def create_token() -> str:
     user = User.objects.create_user('test', 'test@example.com', 'password')
     return Token.objects.create(user=user).key
 
@@ -24,8 +25,8 @@ class TestStationCreateAPIView(APITestCase):
     def setUp(self):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + create_token())
 
-    @mock.patch('stations.views.call_openweathermap_api')
-    @mock.patch('stations.views.call_indego_station_api')
+    @mock.patch('common.utils.call_openweathermap_api')
+    @mock.patch('common.utils.call_indego_station_api')
     def test_create_success(self, indego_mock, weather_mock):
         indego_mock.status = 200
         with open('stations/tests/test_indego.json') as f:
@@ -38,6 +39,32 @@ class TestStationCreateAPIView(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Station.objects.count(), 3)
         self.assertEqual(Weather.objects.count(), 1)
+
+    @mock.patch('common.utils.call_openweathermap_api')
+    @mock.patch('common.utils.call_indego_station_api')
+    def test_indego_api_error_500(self, indego_mock, weather_mock):
+        indego_mock.side_effect = requests.exceptions.RequestException
+        weather_mock.status = 200
+        with open('stations/tests/test_weather.json') as f:
+            weather_mock.return_value = json.load(f)
+
+        response = self.client.post(self.URL, format='json')
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(Station.objects.count(), 0)
+        self.assertEqual(Weather.objects.count(), 0)
+
+    @mock.patch('common.utils.call_openweathermap_api')
+    @mock.patch('common.utils.call_indego_station_api')
+    def test_weather_api_error_500(self, indego_mock, weather_mock):
+        indego_mock.status = 200
+        with open('stations/tests/test_indego.json') as f:
+            indego_mock.return_value = json.load(f)
+        weather_mock.side_effect = requests.exceptions.RequestException
+
+        response = self.client.post(self.URL, format='json')
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(Station.objects.count(), 0)
+        self.assertEqual(Weather.objects.count(), 0)
 
 
 class TestStationListRetrieveAPIView(APITestCase):

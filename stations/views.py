@@ -1,7 +1,5 @@
-import os
 from datetime import datetime
 import requests
-
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
@@ -11,26 +9,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 
-
+from common import utils
 from .models import Station
-from .serializers import StationSerializer, StationListWeatherSerializer, StationWeatherSerializer
+from .serializers import StationListSerializer, StationListWeatherSerializer, StationWeatherSerializer
 from weathers.models import Weather
 from weathers.serializers import WeatherSerializer
-
-
-def call_indego_station_api():
-    url = 'https://kiosks.bicycletransit.workers.dev/phl'
-
-    req = requests.get(url)
-    return req.json()
-
-
-def call_openweathermap_api():
-    appid = os.environ['OPENWEATHERAPI_APPID']
-    url = 'https://api.openweathermap.org/data/2.5/weather?q=Philadelphia&appid=' + appid
-
-    req = requests.get(url)
-    return req.json()
 
 
 class StationCreateAPIView(views.APIView):
@@ -39,32 +22,38 @@ class StationCreateAPIView(views.APIView):
 
     @extend_schema(
         description=(
-            'An endpoints which downloads fresh data from Indego GeoJSON station status API '
+            'An endpoint which downloads fresh data from Indego GeoJSON station status API'
             'and stores it inside MongoDB.<br>'
-            'This endpoint downloads fresh weather data from Open Weather Map API at the same time of *at*'),
-        responses={201: None})
+            'This endpoint downloads fresh weather data from Open Weather Map API at the same time<br><br>'
+            '**Stores data only when both Indego and WeatherMapAPI data are valid.**'),
+        responses={
+            201: OpenApiResponse('201', description='When successfully created'),
+            500: OpenApiResponse('500', description='When cannot connect to external API'),
+        })
     def post(self, request, *args, **kwargs):
         now = datetime.now()
 
-        station_json = call_indego_station_api()
-        for feature in station_json['features']:
-            data = {
-                'at': now,
-                'kioskId': feature['properties']['kioskId'],
-                'document': feature,
-            }
+        try:
+            station_json = utils.call_indego_station_api()
+        except requests.exceptions.RequestException:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            station_serializer = StationSerializer(data=data)
-            station_serializer.is_valid(raise_exception=True)
-            station_serializer.save()
+        station_list_data = [{'at': now, 'kioskId': feature['properties']['kioskId'], 'document': feature}
+                             for feature in station_json['features']]
+        station_list_serializer = StationListSerializer(data=station_list_data)
+        station_list_serializer.is_valid(raise_exception=True)
 
-        weather_json = call_openweathermap_api()
-        data = {
-            'at': now,
-            'document': weather_json,
-        }
-        weather_serializer = WeatherSerializer(data=data)
+        try:
+            weather_json = utils.call_openweathermap_api()
+        except requests.exceptions.RequestException:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        weather_data = {'at': now, 'document': weather_json}
+        weather_serializer = WeatherSerializer(data=weather_data)
         weather_serializer.is_valid(raise_exception=True)
+
+        # save when both station list and weather are valid
+        station_list_serializer.save()
         weather_serializer.save()
 
         return Response(status=status.HTTP_201_CREATED)
@@ -78,7 +67,8 @@ class StationListRetrieveAPIView(views.APIView):
         description=(
             'Snapshot of all stations at a specified time.<br>'
             'This endpoint responds with the actual time of the first snapshot of data on '
-            'or after the requested time and the data.'),
+            'or after the requested time and the data.<br><br>'
+            '**Returns data only when both station list and weather data are found for specified at.**'),
         request=StationListWeatherSerializer,
         parameters=[
             OpenApiParameter(
@@ -116,9 +106,10 @@ class StationRetrieveAPIView(views.APIView):
 
     permission_classes = (IsAuthenticated, )
 
-    @ extend_schema(
-        description=('Snapshot of one station at a specific time<br>'
-                     'The response is the first available on or after the given time.'),
+    @extend_schema(
+        description=('Snapshot of one station at a specific time.<br>'
+                     'The response is the first available on or after the given time.<br><br>'
+                     '**Returns data only when both station and weather data are found for specified at.**'),
         request=StationWeatherSerializer,
         parameters=[OpenApiParameter(
             name='at', description='Specific Datetime (e.g. 2019-09-01T10:00:00)',
