@@ -38,7 +38,7 @@ docker-compose run web python manage.py drf_create_token <username>
 docker-compose up
 ```
 
-3. Go to `http://127.0.0.1:3000/api/schema/swagger-ui/`
+3. Go to `http://0.0.0.0:3000/api/schema/swagger-ui/`
 
 ## Tech stacks
 - Python
