@@ -35,6 +35,8 @@ services:
     image: app
     restart: always
     command: python manage.py runserver 0.0.0.0:3000
+    stdin_open: true
+    tty: true
     volumes:
       - .:/code
     ports:
