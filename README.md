@@ -48,24 +48,26 @@ docker-compose up
 - drf-spectacular (Swagger doc auto generation)
 
 ## What I did
-- Minimum requirement clarification (Request volume, ambiguas specification, hosting preference)
-- Token Authentication
-- Implement 3 endpoints as the challenge describes
-- Use MongoDB with proper indexes and unique constraints
-- Application-level transaction-like implemenation
-- Page cache for GET 2 endpoints
-- Unit tests for mainly validations and Functional tests for APIs (27 tests for 95% coverage)
-- Hosting to an instance of AWS EC2
-- API documentation using Swagger
-- Use Linter auto correct
-- Setup CI(CircleCI for testing, CodeCov for coverage)
+- Requirement clarification (Request volume, ambiguas specification, hosting preference)
+- For minimum requiements
+    - Token Authentication
+    - Implement 3 endpoints as the challenge describes
+    - Use MongoDB with proper indexes and unique constraints
+    - Unit tests for mainly validations and Functional tests for APIs (27 tests for 95% coverage)
+    - Hosting to an instance of AWS EC2
+    - API documentation using Swagger
+- Extras
+    - Application-level transaction-like implemenation
+    - Error codes for front end error handling
+    - Page cache for GET 2 endpoints
+    - Use Linter auto correct
+    - Setup CI(CircleCI for testing, CodeCov for coverage)
 
 ## Limitations
-- No user registration, no token generation, no token expiration
-- No retry for external API request
-- No database-level transactions
+- No user registration, no new token generation, no token expiration
+- No database-level transactions (I need to pay for Djongo or implement ODM by myself)
 - Environment variables are hard coded in Dockerfile
-- Proper production environment server(https, DNS, load-balancing, separated DB servers, logging, monitoring, proper env variables handling, Same/Cross-origin policy, etc...)
+- No proper production server(https, DNS, load-balancing, separated DB servers, logging, monitoring, proper env variables handling, Same/Cross-origin policy, etc...)
 - No deployment automation
 
 ## Main codes to be reviewed
