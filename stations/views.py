@@ -3,7 +3,6 @@ import requests
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
-from django.shortcuts import get_object_or_404
 from rest_framework import status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -76,22 +75,26 @@ class StationListRetrieveAPIView(views.APIView):
                 type=str), ],
         responses={
             200: StationListWeatherSerializer,
-            400: OpenApiResponse('400', description='When no *at* query parameter'),
-            404: OpenApiResponse('404', description='When no stations or no weather for requested *kioskId* and *at*'),  # noqa
+            400: OpenApiResponse('400', description=('When no *at* query parameter.<br>'
+                                                     '**[error_code]** 1001: No *at* query param')),
+            404: OpenApiResponse('404', description=('When no stations or no weather for requested *at*.<br>'
+                                                     '**[error_code]** 1002: No stations, 1003: No weather'))
         })
     @method_decorator(cache_page(60*60*24))
     @method_decorator(vary_on_headers("Authorization",))
     def get(self, request, *args, **kwargs):
         if 'at' not in request.query_params:
-            return Response({'message': "No 'at' query parameter"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error_code': 1001, 'message': "No 'at' query param"}, status=status.HTTP_400_BAD_REQUEST)
         query_at = request.query_params['at']
 
         first_station = Station.objects.filter(at__gte=query_at).order_by('at').first()
         if first_station is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({'error_code': 1002, 'message': 'Station not found'}, status=status.HTTP_404_NOT_FOUND)
 
         stations = Station.objects.filter(at=first_station.at)
-        weather = get_object_or_404(Weather, at=first_station.at)
+        weather = Weather.objects.filter(at=first_station.at).first()
+        if weather is None:
+            return Response({'error_code': 1003, 'message': 'Weather not found'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = StationListWeatherSerializer({
             'at': first_station.at,
@@ -116,20 +119,24 @@ class StationRetrieveAPIView(views.APIView):
             required=True, type=str), ],
         responses={
             200: StationWeatherSerializer,
-            400: OpenApiResponse('400', description='When no *at* query parameter'),
-            404: OpenApiResponse('404', description='When no station or no weather for requested *kioskId* and *at*')  # noqa
+            400: OpenApiResponse('400', description=('When no *at* query parameter.<br>'
+                                                     '**[error_code]** 1001: No *at* query param')),
+            404: OpenApiResponse('404', description=('When no stations or no weather for requested *kiosId* and *at*.<br>'  # noqa
+                                                     '**[error_code]** 1002: No station, 1003: No weather'))
         })
     @method_decorator(cache_page(60*60*24))
     @method_decorator(vary_on_headers("Authorization",))
     def get(self, request, kioskId, *args, **kwargs):
         if 'at' not in request.query_params:
-            return Response({'message': "No 'at' query parameter"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error_code': 1001, 'message': "No 'at' query param"}, status=status.HTTP_400_BAD_REQUEST)
         query_at = request.query_params['at']
 
         station = Station.objects.filter(at__gte=query_at).order_by('at').filter(kioskId=kioskId).first()
         if station is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        weather = get_object_or_404(Weather, at=station.at)
+            return Response({'error_code': 1002, 'message': 'Station not found'}, status=status.HTTP_404_NOT_FOUND)
+        weather = Weather.objects.filter(at=station.at).first()
+        if weather is None:
+            return Response({'error_code': 1003, 'message': 'Weather not found'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = StationWeatherSerializer({
             'at': station.at,
