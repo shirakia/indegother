@@ -1,4 +1,4 @@
-# indegother
+# Indegother
 
 Indego station + Open Weather Map
 
@@ -7,29 +7,39 @@ Indego station + Open Weather Map
 
 ## Swagger UI demo
 
-http://54.150.199.176/api/schema/swagger-ui
+1. Go to this url with token
+    - http://54.150.199.176/api/schema/swagger-ui
 
-Go with this token `Token 8cfb7171617589b8e7bd06c328f921a7697133bd`
 
-## Setup and Run server
-1. Install docker
-2. `docker-compose build`
-3. `docker-compose run web python manage.py createsuperuser`
-4. `docker-compose run web python manage.py drf_create_token <username>`
-5. `docker-compose up`
-
-## Try API endponts
-
-1. Go to `http://127.0.0.1:8000/api/schema/swagger-ui/`
 2. Click here!
 
 <kbd>![Screen Shot 0003-06-26 at 22 01 07](https://user-images.githubusercontent.com/728375/123513835-66b7ee00-d6ca-11eb-9af9-7c11cd549864.png)</kbd>
 
-3. Set Token (from Setup.5) 
+3. Set Token
 
 <kbd>![Screen Shot 0003-06-26 at 22 00 45](https://user-images.githubusercontent.com/728375/123513824-599aff00-d6ca-11eb-98e0-51602cfb2207.png)</kbd>
 
+(For demo server, `Token 8cfb7171617589b8e7bd06c328f921a7697133bd`)
+
 4. Enjoy!
+
+## Run server for development
+
+### Run server
+
+1. Initial set up
+```
+docker-compose build
+docker-compose run web python manage.py createsuperuser
+docker-compose run web python manage.py drf_create_token <username>
+```
+
+2. Run server
+```
+docker-compose up
+```
+
+3. Go to `http://127.0.0.1:8000/api/schema/swagger-ui/`
 
 ## Tech stacks
 - Python
