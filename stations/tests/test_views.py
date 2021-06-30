@@ -90,11 +90,13 @@ class TestStationListRetrieveAPIView(APITestCase):
     def test_list_retrieve_400_when_no_query(self):
         response = self.client.get(self.URL, format='json')
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['error_code'], 1001)
 
-    def test_list_retrieve_404_when_no_specified_sstation(self):
+    def test_list_retrieve_404_when_no_specified_station(self):
         query = 'at=2021-06-26T04:00:00'  # future
         response = self.client.get(f'{self.URL}?{query}', format='json')
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data['error_code'], 1002)
 
 
 class TestStationListRetrieveAPIViewWhenNoWeather(APITestCase):
@@ -114,6 +116,7 @@ class TestStationListRetrieveAPIViewWhenNoWeather(APITestCase):
         query = 'at=2021-06-25T04:00:00'
         response = self.client.get(f'{self.URL}?{query}', format='json')
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data['error_code'], 1003)
 
 
 class TestStationRetrieveAPIView(APITestCase):
@@ -141,12 +144,14 @@ class TestStationRetrieveAPIView(APITestCase):
         kioskId = 3000
         response = self.client.get(f'{self.URL}{kioskId}', format='json')
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['error_code'], 1001)
 
     def test_retrieve_404_when_no_specified_station(self):
         kioskId = 3000
         query = 'at=2021-06-26T04:00:00'  # future
         response = self.client.get(f'{self.URL}{kioskId}?{query}', format='json')
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data['error_code'], 1002)
 
 
 class TestStationRetrieveAPIViewWhenNoWeather(APITestCase):
@@ -168,6 +173,7 @@ class TestStationRetrieveAPIViewWhenNoWeather(APITestCase):
         response = self.client.get(f'{self.URL}{kioskId}?{query}', format='json')
 
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data['error_code'], 1003)
 
 
 class TestWithoutToken(APITestCase):
