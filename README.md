@@ -32,16 +32,18 @@ Go with this token `Token 8cfb7171617589b8e7bd06c328f921a7697133bd`
 4. Enjoy!
 
 ## Tech stacks
+- Python
 - Django / Django REST framework
 - Djongo (Object Document Mapper)
+- MongoDB
 - drf-spectacular (Swagger doc auto generation)
 
 ## What I did
-- Requirement clarification (Request volume, ambiguas specification, hosting preference)
+- Minimum requirement clarification (Request volume, ambiguas specification, hosting preference)
 - Token Authentication
 - Implement 3 endpoints as the challenge describes
 - Use MongoDB with proper indexes and unique constraints
-- Application-level transactions
+- Application-level transaction-like implemenation
 - Page cache for GET 2 endpoints
 - Unit tests for mainly validations and Functional tests for APIs (27 tests for 95% coverage)
 - Hosting to an instance of AWS EC2
