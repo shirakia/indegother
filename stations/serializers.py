@@ -32,6 +32,10 @@ class StationListSerializer(serializers.ListSerializer):
 
     child = StationSerializer()
 
+    def create(self, validated_data):
+        books = [Station(**item) for item in validated_data]
+        return Station.objects.bulk_create(books)
+
 
 class StationListWeatherSerializer(serializers.Serializer):
 

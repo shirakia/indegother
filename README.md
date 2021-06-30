@@ -10,7 +10,6 @@ Indego station + Open Weather Map
 1. Go to this url with token
     - http://54.150.199.176/api/schema/swagger-ui
 
-
 2. Click here!
 
 <kbd>![Screen Shot 0003-06-26 at 22 01 07](https://user-images.githubusercontent.com/728375/123513835-66b7ee00-d6ca-11eb-9af9-7c11cd549864.png)</kbd>
@@ -39,7 +38,7 @@ docker-compose run web python manage.py drf_create_token <username>
 docker-compose up
 ```
 
-3. Go to `http://127.0.0.1:8000/api/schema/swagger-ui/`
+3. Go to `http://127.0.0.1:3000/api/schema/swagger-ui/`
 
 ## Tech stacks
 - Python
