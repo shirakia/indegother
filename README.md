@@ -77,6 +77,7 @@ docker-compose up
 - Serializers
     - Station https://github.com/shirakia/indegother/blob/main/stations/serializers.py
     - Weather https://github.com/shirakia/indegother/blob/main/weathers/serializers.py
+    - StationWeather https://github.com/shirakia/indegother/blob/main/stations/station_weather_serializers.py
 - Views
     - Station https://github.com/shirakia/indegother/blob/main/stations/views.py
 - Tests
