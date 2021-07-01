@@ -79,15 +79,15 @@ docker-compose up
     - Weather https://github.com/shirakia/indegother/blob/main/weathers/serializers.py
     - StationWeather https://github.com/shirakia/indegother/blob/main/stations/station_weather_serializers.py
 - Views
-    - Station https://github.com/shirakia/indegother/blob/main/stations/views.py
+    - https://github.com/shirakia/indegother/blob/main/stations/views.py
 - Tests
-    - Station Views      https://github.com/shirakia/indegother/blob/main/stations/tests/test_views.py
     - Station Serializer https://github.com/shirakia/indegother/blob/main/stations/tests/test_serializers.py
     - Weather Serializer https://github.com/shirakia/indegother/blob/main/weathers/tests/test_serializers.py
-- Utils
+    - Views              https://github.com/shirakia/indegother/blob/main/stations/tests/test_views.py
+- Common
     - Custom Error https://github.com/shirakia/indegother/blob/main/common/errors.py
+    - Utils https://github.com/shirakia/indegother/blob/main/common/utils.py
 - Others(less important)
-    - utils https://github.com/shirakia/indegother/blob/main/common/utils.py
     - Django setting https://github.com/shirakia/indegother/blob/main/config/settings.py
     - urls https://github.com/shirakia/indegother/blob/main/config/urls.py
     - Dockerfile https://github.com/shirakia/indegother/blob/main/Dockerfile
