@@ -10,7 +10,8 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiRespon
 
 from common import utils
 from .models import Station
-from .serializers import StationListSerializer, StationListWeatherSerializer, StationWeatherSerializer
+from .serializers import StationListSerializer
+from .station_weather_serializers import StationListWeatherSerializer, StationWeatherSerializer
 from weathers.models import Weather
 from weathers.serializers import WeatherSerializer
 
