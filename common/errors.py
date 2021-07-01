@@ -1,4 +1,11 @@
-from rest_framework.exceptions import ValidationError, NotFound
+from rest_framework.exceptions import APIException, ValidationError, NotFound
+
+
+class ExternalAPIError(APIException):
+    def __init__(self, detail=None, code=None):
+        APIException.__init__(self, detail=None, code=None)
+        if detail is None:
+            self.detail = {'error_code': 1100, 'message': "External API has problems"}
 
 
 class NoAtError(ValidationError):

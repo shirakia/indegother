@@ -1,5 +1,4 @@
 from datetime import datetime
-import requests
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
@@ -9,11 +8,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 
-from common import utils
+from common import utils, errors
 from .models import Station
 from .serializers import StationListSerializer
 from .station_weather_serializers import StationListWeatherSerializer, StationWeatherSerializer
-import errors
 from weathers.models import Weather
 from weathers.serializers import WeatherSerializer
 
@@ -35,21 +33,13 @@ class StationCreateAPIView(views.APIView):
     def post(self, request, *args, **kwargs):
         now = datetime.now()
 
-        try:
-            station_json = utils.call_indego_station_api()
-        except requests.exceptions.RequestException:
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        station_json = utils.call_indego_station_api()
         station_list_data = [{'at': now, 'kioskId': feature['properties']['kioskId'], 'document': feature}
                              for feature in station_json['features']]
         station_list_serializer = StationListSerializer(data=station_list_data)
         station_list_serializer.is_valid(raise_exception=True)
 
-        try:
-            weather_json = utils.call_openweathermap_api()
-        except requests.exceptions.RequestException:
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        weather_json = utils.call_openweathermap_api()
         weather_data = {'at': now, 'document': weather_json}
         weather_serializer = WeatherSerializer(data=weather_data)
         weather_serializer.is_valid(raise_exception=True)
@@ -63,7 +53,7 @@ class StationCreateAPIView(views.APIView):
 
 def get_at_or_raise(query_params: dict) -> str:
     if 'at' not in query_params:
-        raise errors.NoAtError
+        raise errors.NoAtError()
     try:
         parsed_at = parse_datetime(query_params['at'])
     except ValueError:
