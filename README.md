@@ -53,12 +53,12 @@ docker-compose up
     - Token Authentication
     - Implement 3 endpoints as the challenge describes
     - Use MongoDB with proper indexes and unique constraints
-    - Unit tests for mainly validations and Functional tests for APIs (27 tests for 95% coverage)
+    - Unit tests for mainly validations and Functional tests for APIs (30 tests for 96% coverage)
     - Hosting to an instance of AWS EC2
     - API documentation using Swagger
 - Extras
     - Application-level transaction-like implemenation
-    - Error codes for front end error handling
+    - Return Error codes with custom error classes for front end error handling
     - Page cache for GET 2 endpoints
     - Use Linter auto correct
     - Setup CI(CircleCI for testing, CodeCov for coverage)
@@ -83,6 +83,8 @@ docker-compose up
     - Station Views      https://github.com/shirakia/indegother/blob/main/stations/tests/test_views.py
     - Station Serializer https://github.com/shirakia/indegother/blob/main/stations/tests/test_serializers.py
     - Weather Serializer https://github.com/shirakia/indegother/blob/main/weathers/tests/test_serializers.py
+- Utils
+    - Custom Error https://github.com/shirakia/indegother/blob/main/common/errors.py
 - Others(less important)
     - utils https://github.com/shirakia/indegother/blob/main/common/utils.py
     - Django setting https://github.com/shirakia/indegother/blob/main/config/settings.py
