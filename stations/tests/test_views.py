@@ -90,6 +90,12 @@ class TestStationListRetrieveAPIView(APITestCase):
     def test_list_retrieve_400_when_no_query(self):
         response = self.client.get(self.URL, format='json')
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['error_code'], 1000)
+
+    def test_list_retrieve_400_when_invalid_at(self):
+        query = 'at=invalid_format'
+        response = self.client.get(f'{self.URL}?{query}', format='json')
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['error_code'], 1001)
 
     def test_list_retrieve_404_when_no_specified_station(self):
@@ -143,6 +149,13 @@ class TestStationRetrieveAPIView(APITestCase):
     def test_retrieve_400_when_no_query(self):
         kioskId = 3000
         response = self.client.get(f'{self.URL}{kioskId}', format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['error_code'], 1000)
+
+    def test_list_retrieve_400_when_invalid_at(self):
+        kioskId = 3000
+        query = 'at=invalid_format'
+        response = self.client.get(f'{self.URL}{kioskId}?{query}', format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['error_code'], 1001)
 
