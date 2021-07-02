@@ -47,6 +47,9 @@ docker-compose up
 - MongoDB
 - drf-spectacular (Swagger doc auto generation)
 
+<kbd>![Screen Shot 2021-07-02 at 10 03 32](https://user-images.githubusercontent.com/728375/124205714-cbd17080-db1c-11eb-8e63-d14edde0bd3f.png)</kbd>
+
+
 ## What I did
 - Requirement clarification (Request volume, ambiguas specification, hosting preference)
 - For minimum requiements
